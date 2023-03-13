@@ -11,8 +11,9 @@ some-folder/
 
 
 ## Adding a new file.
-run `./add file_path_here file_name_here`
-e.g. `./add src/cpu/BaseCPU.py BaseCPU.py`
+run `./add.sh file_path_here file_name_here`  
+e.g. `./add.sh src/cpu/BaseCPU.py BaseCPU.py`  
+Do *not* run this more than once - only modify the copy that you have after adding.
 
 ## Copying all current files over to correct place in gem5 repo.
-run `./copy`
+run `./copy`  
