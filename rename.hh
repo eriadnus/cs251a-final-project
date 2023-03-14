@@ -459,17 +459,10 @@ class Rename
     /** The maximum skid buffer size. */
     unsigned skidBufferMax;
 
-    /*
-    
-    Selective Replay Support
-    - Token ID (with wraparound)
-      - Represents next free token
-      - Used as index into dependence vector
-
-    */
-
+    /** Token ID, represents next free Token - Selective Replay Support */
     unsigned tokenID;
 
+    /** Allocate next token for load instruction - Selective Replay Support */
     unsigned allocateTokenID();
 
     /** Enum to record the source of a structure full stall.  Can come from
