@@ -1082,6 +1082,14 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
     UnifiedRenameMap *map = renameMap[tid];
     unsigned num_dest_regs = inst->numDestRegs();
     auto *isa = tc->getIsaPtr();
+    unsigned new_tokenID = 0;
+
+    if (inst->isLoad()) {
+        // Allocate a new, free token ID to "represent" this load.
+        new_tokenID = allocateTokenID();
+
+        printf("HELLO, LOAD! Allocated new token: %d\n", new_tokenID);
+    }
 
     // Rename the destination registers.
     for (int dest_idx = 0; dest_idx < num_dest_regs; dest_idx++) {
@@ -1134,18 +1142,13 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
         */
 
         if (inst->isLoad()) {
-
-            // Allocate a new, free token ID to "represent" this load.
-            unsigned new_tokenID = allocateTokenID();
-
-            printf("HELLO, LOAD!");
-
-            // Record dependence on this token.
+            // Record dependence on this token for this destination register.
             // TODO
         }
 
         // Propogate forward all dependences of source registers.
-        // TODO
+        // TODO   
+        // for (renamed src regs for instruction (check class definition)
 
         ++stats.renamedOperands;
     }
@@ -1156,7 +1159,7 @@ Rename::allocateTokenID() {
 
     // Check to make sure we haven't gone over the max allowed token value.
     if (tokenID == MaxTokenID)
-        tokenID = 0;
+        tokenID = 1;
     else // Get next free token.
         tokenID++;
     

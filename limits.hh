@@ -36,7 +36,7 @@ namespace o3
 
 static constexpr int MaxWidth = 12;
 static constexpr int MaxThreads = 4;
-static constexpr int MaxTokenID = 31; // Selective Replay Support - used as index into dependence vector
+static constexpr int MaxTokenID = 32; // Selective Replay Support - used as index into dependence vector
 
 } // namespace o3
 } // namespace gem5
