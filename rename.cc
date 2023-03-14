@@ -87,10 +87,6 @@ Rename::Rename(CPU *_cpu, const BaseO3CPUParams &params)
         serializeInst[tid] = nullptr;
         serializeOnNextInst[tid] = false;
     }
-
-    // For Selective Replay Support
-    activeTokens = 0;
-    lastAllocatedToken = 0;
 }
 
 std::string
@@ -1088,7 +1084,7 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
     /* Selective Replay Support */
     if (inst->isLoad()) {
         // Allocate a new, free token ID to "represent" this load.
-        if (allocateTokenID(inst))
+        if (tokenManager.allocateTokenID(inst))
             printf("Allocated new token: %d\n", inst->tokenID);
         else // TODO: Handle these structural issues of no more tokens being able to be allocated.
             printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.");
@@ -1188,43 +1184,6 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
     if (inst->dependenceVector) {
         // TODO
     }
-}
-
-bool
-Rename::allocateTokenID(const DynInstPtr &inst) {
-
-    // Start at next token position (more likely available).
-    int query_idx = lastAllocatedToken % MaxTokenID;
-
-    printf("Current token allocation: %d\n", activeTokens);
-
-    // Check to make sure we haven't gone over the max allowed token value.
-    for (int query_attempt = 0; query_attempt < MaxTokenID; query_attempt++)
-    {
-        if (!(activeTokens & (1 << query_idx))) { // if token with index "query_idx" is not-allocated, let's allocate it
-            activeTokens |= (1 << query_idx);
-            inst->tokenID = query_idx + 1; // Represents a token, value 1 - max tokens
-            lastAllocatedToken = query_idx + 1;
-            return true;
-        }
-
-        query_idx = (query_idx+1) % MaxTokenID;
-    }
-
-    // If we didn't exit early, then we have no tokens to allocate; loudly proclaim this error
-    printf("ERROR: Max number of tokens (%d) reached.\n", MaxTokenID);
-    return false; // indicates failure to allocate
-}
-
-bool
-Rename::deallocateTokenID(unsigned token) {
-
-    if (token <= MaxTokenID && (activeTokens & (1 << (token-1)))) {
-        activeTokens &= ~(1 << (token-1)); // Unset allocation flag for token.
-        return true;
-    }
-
-    return false;
 }
 
 int

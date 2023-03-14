@@ -54,6 +54,7 @@
 #include "cpu/o3/free_list.hh"
 #include "cpu/o3/iew.hh"
 #include "cpu/o3/limits.hh"
+#include "cpu/o3/token_manager.hh"
 #include "cpu/timebuf.hh"
 #include "sim/probe/probe.hh"
 
@@ -463,20 +464,11 @@ class Rename
 
     /********* Selective Replay Support BEGIN ********/
 
-    /** Bitstring of active, allocated set of tokens */
-    uint32_t activeTokens;
-
-    /** Last token allocation completed, enables small optimization for token allocation */
-    unsigned lastAllocatedToken;
-
-    /** Allocate next token for LOAD instruction */
-    bool allocateTokenID(const DynInstPtr &inst);
-
-    /** Deallocate specified token (to be used when instructions commit). */
-    bool deallocateTokenID(unsigned token);
-
     /** Map of register IDs to dependence vectors, a bitstring representing set bits for tokens of previous LOAD instructions */
     std::map<RegIndex, uint32_t> dependenceVectors;
+
+    /** TokenManager for managing dependence tokens for LOAD instructions */
+    TokenManager tokenManager;
 
     /********* Selective Replay Support END ********/
 
