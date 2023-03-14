@@ -466,6 +466,9 @@ class Rename
     /** Bitstring of active, allocated set of tokens */
     uint32_t activeTokens;
 
+    /** Last token allocation completed, enables small optimization for token allocation */
+    unsigned lastAllocatedToken;
+
     /** Allocate next token for LOAD instruction */
     bool allocateTokenID(const DynInstPtr &inst);
 

@@ -90,6 +90,7 @@ Rename::Rename(CPU *_cpu, const BaseO3CPUParams &params)
 
     // For Selective Replay Support
     activeTokens = 0;
+    lastAllocatedToken = 0;
 }
 
 std::string
@@ -1192,14 +1193,20 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
 bool
 Rename::allocateTokenID(const DynInstPtr &inst) {
 
+    // Start at next token position (more likely available).
+    int query_idx = lastAllocatedToken % MaxTokenID;
+
     // Check to make sure we haven't gone over the max allowed token value.
-    for (int query_idx = 0; query_idx < MaxTokenID; query_idx++)
+    for (int query_attempt = 0; query_attempt < MaxTokenID; query_attempt++)
     {
-        if (activeTokens & (1 << query_idx) == 0) { // if token with index "query_idx" is not-allocated, let's allocate it
+        if (!(activeTokens & (1 << query_idx))) { // if token with index "query_idx" is not-allocated, let's allocate it
             activeTokens |= query_idx;
             inst->tokenID = query_idx + 1; // Represents a token, value 1 - max tokens
+            lastAllocatedToken = query_idx + 1;
             return true;
         }
+
+        query_idx = (query_idx+1) % MaxTokenID;
     }
 
     // If we didn't exit early, then we have no tokens to allocate; loudly proclaim this error
