@@ -1,4 +1,6 @@
 #!/bin/bash
 
-cp ../gem5/${1} $2
-echo "cp ${2} ../gem5/${1}" >> copy.sh
+GEM5_DIR="gem5"
+
+cp ../$GEM5_DIR/${1} $2
+echo "cp ${2} ../\$GEM5_DIR/${1}" >> copy.sh
