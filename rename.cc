@@ -42,6 +42,7 @@
 #include "cpu/o3/rename.hh"
 
 #include <list>
+#include <map>
 
 #include "cpu/o3/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
@@ -88,7 +89,7 @@ Rename::Rename(CPU *_cpu, const BaseO3CPUParams &params)
     }
 
     // For Selective Replay Support
-    tokenID = 0;
+    activeTokens = 0;
 }
 
 std::string
@@ -1082,14 +1083,17 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
     UnifiedRenameMap *map = renameMap[tid];
     unsigned num_dest_regs = inst->numDestRegs();
     auto *isa = tc->getIsaPtr();
-    unsigned new_tokenID = 0;
 
+    /* Selective Replay Support */
     if (inst->isLoad()) {
         // Allocate a new, free token ID to "represent" this load.
-        new_tokenID = allocateTokenID();
-
-        printf("HELLO, LOAD! Allocated new token: %d\n", new_tokenID);
+        if (allocateTokenID(inst))
+            printf("Allocated new token: %d\n", inst->tokenID);
+        else // TODO: Handle these structural issues of no more tokens being able to be allocated.
+            printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.")
     }
+
+    inst->dependenceVector = 0;
 
     // Rename the destination registers.
     for (int dest_idx = 0; dest_idx < num_dest_regs; dest_idx++) {
@@ -1141,29 +1145,77 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
 
         */
 
+        uint16_t renamed_dest_reg = rename_result.first->index();
+
+        // Allocate token and record new dependence (to be trickled down) if instruction is load.
         if (inst->isLoad()) {
+
+            uint32_t existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
+
             // Record dependence on this token for this destination register.
-            // TODO
+            if (new_tokenID)
+                dependenceVectors[renamed_dest_reg] = existing_dest_dependence_vector | (1 << (new_tokenID - 1));
+
+            // TODO: Handle these structural issues of no more tokens being able to be allocated.
         }
 
-        // Propogate forward all dependences of source registers.
-        // TODO   
-        // for (renamed src regs for instruction (check class definition)
+        // Propagate forward all dependences of source registers.
+        unsigned num_src_regs = inst->numSrcRegs();
+        uint32_t src_dependence_vector_ac = 0;
+
+        for (int src_idx = 0; src_idx < num_src_regs; src_idx++) {
+
+            // Get source reg.
+            uint16_t renamed_src_reg = inst->renamedSrcIdx(src_idx)->index();
+
+            // Accumulate source's dependence vector.
+            uint32_t src_dependence_vector = dependenceVectors.find(renamed_src_reg) != dependenceVectors.end() ? dependenceVectors[renamed_src_reg] : 0;
+            src_dependence_vector_ac |= src_dependence_vector;
+        }
+
+        // Update dest's dependence vector
+        uint32_t existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
+        dependenceVectors[renamed_dest_reg] = existing_dest_dependence_vector | src_dependence_vector_ac;
+
+        // Update instruction's dependence vector (represents OR of dest registers' dependence vectors).
+        inst->dependenceVector |= dependenceVectors[renamed_dest_reg];
 
         ++stats.renamedOperands;
     }
+
+    // Add to instruction Replay Queue if non-zero dependence vector
+    if (inst->dependenceVector) {
+        // TODO
+    }
 }
 
-unsigned
-Rename::allocateTokenID() {
+bool
+Rename::allocateTokenID(const DynInstPtr &inst) {
 
     // Check to make sure we haven't gone over the max allowed token value.
-    if (tokenID == MaxTokenID)
-        tokenID = 1;
-    else // Get next free token.
-        tokenID++;
-    
-    return tokenID;
+    for (int query_idx = 0; query_idx < MaxTokenID; query_idx++)
+    {
+        if (activeTokens & (1 << query_idx) == 0) { // if token with index "query_idx" is not-allocated, let's allocate it
+            activeTokens |= query_idx;
+            inst->tokenID = query_idx + 1; // Represents a token, value 1 - max tokens
+            return true;
+        }
+    }
+
+    // If we didn't exit early, then we have no tokens to allocate; loudly proclaim this error
+    printf("ERROR: Max number of tokens (%d) reached.", MaxTokenID);
+    return false; // indicates failure to allocate
+}
+
+bool
+Rename::deallocateTokenID(unsigned token) {
+
+    if (token <= MaxTokenID && (activeTokens & (1 << (token-1)))) {
+        activeTokens &= ~(1 << (token-1)); // Unset allocation flag for token.
+        return true;
+    }
+
+    return false;
 }
 
 int

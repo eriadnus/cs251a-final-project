@@ -44,8 +44,10 @@
 
 #include <list>
 #include <utility>
+#include <map>
 
 #include "base/statistics.hh"
+#include "base/types.hh"
 #include "cpu/o3/comm.hh"
 #include "cpu/o3/commit.hh"
 #include "cpu/o3/dyn_inst_ptr.hh"
@@ -459,11 +461,21 @@ class Rename
     /** The maximum skid buffer size. */
     unsigned skidBufferMax;
 
-    /** Token ID, represents next free Token - Selective Replay Support */
-    unsigned tokenID;
+    /********* Selective Replay Support BEGIN ********/
 
-    /** Allocate next token for load instruction - Selective Replay Support */
-    unsigned allocateTokenID();
+    /** Bitstring of active, allocated set of tokens */
+    uint32_t activeTokens;
+
+    /** Allocate next token for LOAD instruction */
+    bool allocateTokenID(const DynInstPtr &inst);
+
+    /** Deallocate specified token (to be used when instructions commit). */
+    bool deallocateTokenID(uint16_t token);
+
+    /** Map of register IDs to dependence vectors, a bitstring representing set bits for tokens of previous LOAD instructions */
+    std::map<RegIndex, uint32_t> dependenceVectors;
+
+    /********* Selective Replay Support END ********/
 
     /** Enum to record the source of a structure full stall.  Can come from
      * either ROB, IQ, LSQ, and it is priortized in that order.

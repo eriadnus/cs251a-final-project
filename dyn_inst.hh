@@ -353,8 +353,15 @@ class DynInst : public ExecContext, public RefCounted
     ssize_t sqIdx = -1;
     typename LSQUnit::SQIterator sqIt;
 
-    /** Memory dependence flags - Selective Replay Support */
-    uint32_t mem_dependence = 0;
+    /********* Selective Replay Support BEGIN ********/
+
+    /** Dependence vector on previous LOAD instructions, representing ORed dependencies of dest regs */
+    uint32_t dependenceVector = 0;
+
+    /** Dependence token ID for this instruction (if applicable; set to token if LOAD instruction; 0 otherwise) */
+    unsigned tokenID = 0;
+
+    /********* Selective Replay Support END ********/
 
     /////////////////////// TLB Miss //////////////////////
     /**
