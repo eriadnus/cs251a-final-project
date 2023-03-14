@@ -1,7 +1,8 @@
 #ifndef __CPU_O3_TOKEN_MANAGER_HH__
-#define __CPU_O3_TTOKEN_MANAGER_HH__
+#define __CPU_O3_TOKEN_MANAGER_HH__
 
 #include "base/types.hh"
+#include "cpu/o3/dyn_inst_ptr.hh"
 
 namespace gem5
 {
@@ -23,11 +24,11 @@ class TokenManager
   private:
     
     /** Bitstring of active, allocated set of tokens */
-    static uint32_t activeTokens = 0;
+    static uint32_t activeTokens;
 
     /** Last token allocation completed, enables small optimization for token allocation */
-    static unsigned lastAllocatedToken = 0;
-}
+    static unsigned lastAllocatedToken;
+};
 
 } // namespace o3
 } // namespace gem5

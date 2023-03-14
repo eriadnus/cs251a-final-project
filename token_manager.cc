@@ -1,6 +1,7 @@
 #include "cpu/o3/token_manager.hh"
 
 #include "cpu/o3/limits.hh"
+#include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/dyn_inst.hh"
 
 namespace gem5
@@ -8,6 +9,9 @@ namespace gem5
 
 namespace o3
 {
+
+uint32_t TokenManager::activeTokens = 0;
+unsigned TokenManager::lastAllocatedToken = 0;
 
 bool
 TokenManager::allocateTokenID(const DynInstPtr &inst) {
