@@ -3,7 +3,7 @@
 user_name="hcassar"
 tmp_dir_name="cs251a_deploy"
 tmp_dir="/tmp/${tmp_dir_name}"
-remote_deploy_directory="~/"
+remote_deploy_directory="~"
 GEM5_DIR="gem5-harrison"
 
 mkdir "${tmp_dir}"

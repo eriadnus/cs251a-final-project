@@ -1138,6 +1138,8 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
             // Allocate a new, free token ID to "represent" this load.
             unsigned new_tokenID = allocateTokenID();
 
+            printf("HELLO, LOAD!");
+
             // Record dependence on this token.
             // TODO
         }
