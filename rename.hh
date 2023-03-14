@@ -470,7 +470,7 @@ class Rename
     bool allocateTokenID(const DynInstPtr &inst);
 
     /** Deallocate specified token (to be used when instructions commit). */
-    bool deallocateTokenID(uint16_t token);
+    bool deallocateTokenID(unsigned token);
 
     /** Map of register IDs to dependence vectors, a bitstring representing set bits for tokens of previous LOAD instructions */
     std::map<RegIndex, uint32_t> dependenceVectors;

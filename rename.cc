@@ -1090,7 +1090,7 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
         if (allocateTokenID(inst))
             printf("Allocated new token: %d\n", inst->tokenID);
         else // TODO: Handle these structural issues of no more tokens being able to be allocated.
-            printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.")
+            printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.");
     }
 
     inst->dependenceVector = 0;
@@ -1153,8 +1153,8 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
             uint32_t existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
 
             // Record dependence on this token for this destination register.
-            if (new_tokenID)
-                dependenceVectors[renamed_dest_reg] = existing_dest_dependence_vector | (1 << (new_tokenID - 1));
+            if (inst->tokenID)
+                dependenceVectors[renamed_dest_reg] = existing_dest_dependence_vector | (1 << (inst->tokenID - 1));
 
             // TODO: Handle these structural issues of no more tokens being able to be allocated.
         }
