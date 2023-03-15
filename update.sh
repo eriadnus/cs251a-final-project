@@ -19,3 +19,4 @@ cp ../$GEM5_DIR/src/cpu/o3/inst_queue.hh inst_queue.hh
 cp ../$GEM5_DIR/src/cpu/o3/fetch.cc fetch.cc
 cp ../$GEM5_DIR/src/cpu/o3/fetch.hh fetch.hh
 cp ../$GEM5_DIR/src/cpu/o3/dyn_inst.cc dyn_inst.cc
+cp ../$GEM5_DIR/src/cpu/o3/lsq_unit.cc lsq_unit.cc
