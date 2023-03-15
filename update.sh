@@ -14,3 +14,5 @@ cp ../$GEM5_DIR/src/cpu/o3/dyn_inst.hh dyn_inst.hh
 cp ../$GEM5_DIR/src/cpu/o3/SConscript SConscript
 cp ../$GEM5_DIR/src/cpu/o3/token_manager.cc token_manager.cc
 cp ../$GEM5_DIR/src/cpu/o3/token_manager.hh token_manager.hh
+cp ../$GEM5_DIR/src/cpu/o3/inst_queue.cc inst_queue.cc
+cp ../$GEM5_DIR/src/cpu/o3/inst_queue.hh inst_queue.hh

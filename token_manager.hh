@@ -21,6 +21,14 @@ class TokenManager
     /** Deallocate specified token (to be used when instructions commit). */
     bool deallocateTokenID(unsigned token);
 
+    /** Modifiers for current active token counts, for debugging */
+    void _incrementCurrentActiveTokenCount();
+    void _decrementCurrentActiveTokenCount();
+
+    /** Max and current active tokens during lifetime of TokenManager, for debugging */
+    static unsigned maxNumActiveTokens;
+    static unsigned currentNumActiveTokens;
+
   private:
     
     /** Bitstring of active, allocated set of tokens */

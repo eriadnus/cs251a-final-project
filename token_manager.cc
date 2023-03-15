@@ -12,6 +12,8 @@ namespace o3
 
 uint32_t TokenManager::activeTokens = 0;
 unsigned TokenManager::lastAllocatedToken = 0;
+unsigned TokenManager::maxNumActiveTokens = 0;
+unsigned TokenManager::currentNumActiveTokens = 0;
 
 bool
 TokenManager::allocateTokenID(const DynInstPtr &inst) {
@@ -28,6 +30,7 @@ TokenManager::allocateTokenID(const DynInstPtr &inst) {
             activeTokens |= (1 << query_idx);
             inst->tokenID = query_idx + 1; // Represents a token, value 1 - max tokens
             lastAllocatedToken = query_idx + 1;
+            _incrementCurrentActiveTokenCount();
             return true;
         }
 
@@ -36,6 +39,8 @@ TokenManager::allocateTokenID(const DynInstPtr &inst) {
 
     // If we didn't exit early, then we have no tokens to allocate; loudly proclaim this error
     printf("ERROR: Max number of tokens (%d) reached.\n", MaxTokenID);
+    inst->tokenID = MaxTokenID + 1; // impossible token, but setting to non-zero for testing purposes.
+    _incrementCurrentActiveTokenCount();
     return false; // indicates failure to allocate
 }
 
@@ -44,10 +49,23 @@ TokenManager::deallocateTokenID(unsigned token) {
 
     if (token <= MaxTokenID && (activeTokens & (1 << (token-1)))) {
         activeTokens &= ~(1 << (token-1)); // Unset allocation flag for token.
+        _decrementCurrentActiveTokenCount();
         return true;
     }
 
     return false;
+}
+
+void
+TokenManager::_incrementCurrentActiveTokenCount() {
+    currentNumActiveTokens++;
+    if (currentNumActiveTokens > maxNumActiveTokens)
+        maxNumActiveTokens = currentNumActiveTokens;
+}
+
+void
+TokenManager::_decrementCurrentActiveTokenCount() {
+    currentNumActiveTokens--;
 }
 
 } // namespace o3
