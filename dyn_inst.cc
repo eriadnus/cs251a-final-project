@@ -393,7 +393,7 @@ DynInst::completeAcc(PacketPtr pkt)
     // Deallocate token (if LOAD instruction) since this instruction has now completed!
     if (isLoad()) {
         printf("Completing LOAD instruction with token: %d. Max number tokens up to this point: %d\n", tokenID, tokenManager->maxNumActiveTokens);
-        tokenManager->decrementCurrentActiveTokenCount();
+        tokenManager->_decrementCurrentActiveTokenCount();
     }
     else
         printf(".");
