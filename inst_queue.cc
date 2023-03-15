@@ -955,12 +955,12 @@ InstructionQueue::commit(const InstSeqNum &inst, ThreadID tid)
     while (iq_it != instList[tid].end() &&
            (*iq_it)->seqNum <= inst) {
 
-        if ((*iq_it)->tokenID) {
-            printf("Popping off (committing) instruction with token: %d. Max number tokens up to this point: %d\n", (*iq_it)->tokenID, tokenManager.maxNumActiveTokens);
-            tokenManager._decrementCurrentActiveTokenCount();
-        }
-        else
-            printf(".");
+        // if ((*iq_it)->tokenID) {
+        //     printf("Popping off (committing) instruction with token: %d. Max number tokens up to this point: %d\n", (*iq_it)->tokenID, tokenManager.maxNumActiveTokens);
+        //     tokenManager._decrementCurrentActiveTokenCount();
+        // }
+        // else
+        //     printf(".");
 
         ++iq_it;
         instList[tid].pop_front();

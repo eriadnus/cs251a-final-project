@@ -54,6 +54,7 @@
 #include "cpu/o3/dep_graph.hh"
 #include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/limits.hh"
+// #include "cpu/o3/token_manager.hh"
 #include "cpu/o3/mem_dep_unit.hh"
 #include "cpu/o3/store_set.hh"
 #include "cpu/op_class.hh"
@@ -315,8 +316,8 @@ class InstructionQueue
 
     /********* Selective Replay Support BEGIN ********/
 
-    /** TokenManager for managing dependence tokens for LOAD instructions */
-    TokenManager tokenManager;
+    // /** TokenManager for managing dependence tokens for LOAD instructions */
+    // TokenManager tokenManager;
 
     /********* Selective Replay Support END ********/
 

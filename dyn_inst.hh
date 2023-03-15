@@ -58,6 +58,7 @@
 #include "cpu/o3/cpu.hh"
 #include "cpu/o3/dyn_inst_ptr.hh"
 #include "cpu/o3/lsq_unit.hh"
+#include "cpu/o3/token_manager.hh"
 #include "cpu/op_class.hh"
 #include "cpu/reg_class.hh"
 #include "cpu/static_inst.hh"
@@ -76,7 +77,7 @@ class DynInst : public ExecContext, public RefCounted
 {
   private:
     DynInst(const StaticInstPtr &staticInst, const StaticInstPtr &macroop,
-            InstSeqNum seq_num, CPU *cpu);
+            InstSeqNum seq_num, CPU *cpu, TokenManager *token_manager);
 
   public:
     // The list of instructions iterator type.
@@ -98,15 +99,15 @@ class DynInst : public ExecContext, public RefCounted
 
     /** BaseDynInst constructor given a binary instruction. */
     DynInst(const Arrays &arrays, const StaticInstPtr &staticInst,
-            const StaticInstPtr &macroop, InstSeqNum seq_num, CPU *cpu);
+            const StaticInstPtr &macroop, InstSeqNum seq_num, CPU *cpu, TokenManager *token_manager);
 
     DynInst(const Arrays &arrays, const StaticInstPtr &staticInst,
             const StaticInstPtr &macroop, const PCStateBase &pc,
-            const PCStateBase &pred_pc, InstSeqNum seq_num, CPU *cpu);
+            const PCStateBase &pred_pc, InstSeqNum seq_num, CPU *cpu, TokenManager *token_manager);
 
     /** BaseDynInst constructor given a static inst pointer. */
     DynInst(const Arrays &arrays, const StaticInstPtr &_staticInst,
-            const StaticInstPtr &_macroop);
+            const StaticInstPtr &_macroop, TokenManager *token_manager);
 
     ~DynInst();
 
@@ -360,6 +361,9 @@ class DynInst : public ExecContext, public RefCounted
 
     /** Dependence token ID for this instruction (if applicable; set to token if LOAD instruction; 0 otherwise) */
     unsigned tokenID = 0;
+
+    /** Pointer to TokenManager object for dependence token management. */
+    TokenManager *tokenManager = nullptr;
 
     /********* Selective Replay Support END ********/
 

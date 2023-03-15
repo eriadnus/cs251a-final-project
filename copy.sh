@@ -16,3 +16,6 @@ cp token_manager.cc ../$GEM5_DIR/src/cpu/o3/token_manager.cc
 cp token_manager.hh ../$GEM5_DIR/src/cpu/o3/token_manager.hh
 cp inst_queue.cc ../$GEM5_DIR/src/cpu/o3/inst_queue.cc
 cp inst_queue.hh ../$GEM5_DIR/src/cpu/o3/inst_queue.hh
+cp fetch.cc ../$GEM5_DIR/src/cpu/o3/fetch.cc
+cp fetch.hh ../$GEM5_DIR/src/cpu/o3/fetch.hh
+cp dyn_inst.cc ../$GEM5_DIR/src/cpu/o3/dyn_inst.cc
