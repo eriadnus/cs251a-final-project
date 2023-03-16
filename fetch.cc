@@ -1055,6 +1055,9 @@ Fetch::buildInst(ThreadID tid, StaticInstPtr staticInst,
             arrays, staticInst, curMacroop, this_pc, next_pc, seq, cpu, &tokenManager);
     instruction->setTid(tid);
 
+    if (instruction->isLoad())
+        printf("LOAD Fetched: %s\n", instruction->staticInst->disassemble(this_pc.instAddr()).c_str());
+
     instruction->setThreadState(cpu->thread[tid]);
 
     DPRINTF(Fetch, "[tid:%i] Instruction PC %s created [sn:%lli].\n",
