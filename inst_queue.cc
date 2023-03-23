@@ -950,20 +950,17 @@ InstructionQueue::commit(const InstSeqNum &inst, ThreadID tid)
     DPRINTF(IQ, "[tid:%i] Committing instructions older than [sn:%llu]\n",
             tid,inst);
 
-    ListIt iq_it = instList[tid].begin();
-
+    ListIt iq_it = instList[tid].begin(); 
     while (iq_it != instList[tid].end() &&
            (*iq_it)->seqNum <= inst) {
 
-        // if ((*iq_it)->tokenID) {
-        //     printf("Popping off (committing) instruction with token: %d. Max number tokens up to this point: %d\n", (*iq_it)->tokenID, tokenManager.maxNumActiveTokens);
-        //     tokenManager._decrementCurrentActiveTokenCount();
-        // }
-        // else
-        //     printf(".");
-
-        ++iq_it;
-        instList[tid].pop_front();
+        if ((*iq_it)->dependenceVector == 0) {
+             printf("Removing from instList an instruction that has 0 dependencies.\n");
+	     iq_it = instList[tid].erase(iq_it);
+        }
+        else {
+	     ++iq_it;
+	}
     }
 
     assert(freeEntries == (numEntries - countInsts()));
