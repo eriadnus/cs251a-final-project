@@ -22,13 +22,13 @@ TokenManager::allocateTokenID(const DynInstPtr &inst) {
     // Start at next token position (more likely available).
     int query_idx = lastAllocatedToken % MaxTokenID;
 
-    printf("Current token allocation: %ld\n", activeTokens);
+    printf("Current token allocation: %lu\n", activeTokens);
 
     // Check to make sure we haven't gone over the max allowed token value.
     for (int query_attempt = 0; query_attempt < MaxTokenID; query_attempt++)
     {
-        if (!(activeTokens & (1 << query_idx))) { // if token with index "query_idx" is not-allocated, let's allocate it
-            activeTokens |= (1 << query_idx);
+        if (!(activeTokens & ((uint64_t) 1 << query_idx))) { // if token with index "query_idx" is not-allocated, let's allocate it
+            activeTokens |= ((uint64_t) 1 << query_idx);
             inst->tokenID = query_idx + 1; // Represents a token, value 1 - max tokens
             lastAllocatedToken = query_idx + 1;
             _incrementCurrentActiveTokenCount();
@@ -50,7 +50,7 @@ TokenManager::deallocateTokenID(unsigned token) {
 
     if (token <= MaxTokenID && token > 0) {
         activeTokens &= ~(1 << (token-1)); // Unset allocation flag for token.
-        printf("Current token allocation during deallocation: %ld\n", activeTokens);
+        printf("Current token allocation during deallocation: %lu\n", activeTokens);
         _decrementCurrentActiveTokenCount();
         return true;
     }
