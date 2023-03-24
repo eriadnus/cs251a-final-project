@@ -209,6 +209,18 @@ DynInst::~DynInst()
     for (int i = 0; i < ((_numSrcs + 7) / 8); i++)
         _readySrcIdx[i].~uint8_t();
 
+    /** Selective Replay Support BEGIN */
+
+    // Deallocate token (if LOAD instruction) since this instruction has now completed!
+    if (isLoad()) {
+        printf("Destructing LOAD instruction with token: %d. Max number tokens up to this point: %d\n", tokenID, tokenManager->maxNumActiveTokens);
+        tokenManager->_decrementCurrentActiveTokenCount();
+    }
+    else
+        printf(".");
+
+    /** Selective Replay Support END */
+
 #if TRACING_ON
     if (debug::O3PipeView) {
         Tick fetch = fetchTick;
@@ -390,13 +402,13 @@ DynInst::completeAcc(PacketPtr pkt)
 
     /** Selective Replay Support BEGIN */
 
-    // Deallocate token (if LOAD instruction) since this instruction has now completed!
-    if (isLoad()) {
-        printf("Completing LOAD instruction with token: %d. Max number tokens up to this point: %d\n", tokenID, tokenManager->maxNumActiveTokens);
-        tokenManager->_decrementCurrentActiveTokenCount();
-    }
-    else
-        printf(".");
+    // // Deallocate token (if LOAD instruction) since this instruction has now completed!
+    // if (isLoad()) {
+    //     printf("Completing LOAD instruction with token: %d. Max number tokens up to this point: %d\n", tokenID, tokenManager->maxNumActiveTokens);
+    //     tokenManager->_decrementCurrentActiveTokenCount();
+    // }
+    // else
+    //     printf(".");
 
     /** Selective Replay Support END */
 
