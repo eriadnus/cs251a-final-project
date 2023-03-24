@@ -1085,10 +1085,12 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
     /* Selective Replay Support */
     if (inst->isLoad()) {
         // Allocate a new, free token ID to "represent" this load.
-        if (tokenManager.allocateTokenID(inst))
-            printf("Allocated new token: %d\n", inst->tokenID);
-        else // TODO: Handle these structural issues of no more tokens being able to be allocated.
-            printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.");
+        if (tokenManager.allocateTokenID(inst)) {
+            // printf("Allocated new token: %d\n", inst->tokenID);
+        }
+        else { // TODO: Handle these structural issues of no more tokens being able to be allocated.
+            // printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.");
+        }
     }
 
     inst->dependenceVector = 0;
