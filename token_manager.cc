@@ -14,6 +14,7 @@ uint32_t TokenManager::activeTokens = 0;
 unsigned TokenManager::lastAllocatedToken = 0;
 unsigned TokenManager::maxNumActiveTokens = 0;
 unsigned TokenManager::currentNumActiveTokens = 0;
+unsigned TokenManager::tokenOverAllocationCount = 0;
 
 bool
 TokenManager::allocateTokenID(const DynInstPtr &inst) {
@@ -38,9 +39,9 @@ TokenManager::allocateTokenID(const DynInstPtr &inst) {
     }
 
     // If we didn't exit early, then we have no tokens to allocate; loudly proclaim this error
-    printf("ERROR: Max number of tokens (%d) reached.\n", MaxTokenID);
+    _incrementOverAllocationCount();
+    printf("ERROR: Max number of tokens (%d) reached. Number of errors now: %d\n", MaxTokenID, tokenOverAllocationCount);
     inst->tokenID = MaxTokenID + 1; // impossible token, but setting to non-zero for testing purposes.
-    //_incrementCurrentActiveTokenCount();
     return false; // indicates failure to allocate
 }
 
@@ -68,6 +69,16 @@ void
 TokenManager::_decrementCurrentActiveTokenCount() {
     if (currentNumActiveTokens > 0)
         currentNumActiveTokens--;
+}
+
+void
+TokenManager::_incrementOverAllocationCount() {
+    tokenOverAllocationCount++;
+}
+
+void
+TokenManager::_resetOverAllocationCount() {
+    tokenOverAllocationCount = 0;
 }
 
 } // namespace o3
