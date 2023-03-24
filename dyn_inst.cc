@@ -214,7 +214,7 @@ DynInst::~DynInst()
     // Deallocate token (if LOAD instruction) since this instruction has now completed!
     if (isLoad()) {
         printf("Destructing LOAD instruction with token: %d. Max number tokens up to this point: %d\n", tokenID, tokenManager->maxNumActiveTokens);
-        tokenManager->_decrementCurrentActiveTokenCount();
+        tokenManager->deallocateTokenID(tokenID);
     }
     else
         printf(".");
