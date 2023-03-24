@@ -47,6 +47,7 @@
 #include "cpu/o3/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/limits.hh"
+#include "cpu/o3/token_manager.hh"
 #include "cpu/reg_class.hh"
 #include "debug/Activity.hh"
 #include "debug/O3PipeView.hh"
@@ -1147,7 +1148,7 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
         // Allocate token and record new dependence (to be trickled down) if instruction is load.
         if (inst->isLoad()) {
 
-            uint32_t existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
+            TokenManager::TokenDependenceVector existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
 
             // Record dependence on this token for this destination register.
             if (inst->tokenID)
@@ -1166,12 +1167,12 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
             uint16_t renamed_src_reg = inst->renamedSrcIdx(src_idx)->index();
 
             // Accumulate source's dependence vector.
-            uint32_t src_dependence_vector = dependenceVectors.find(renamed_src_reg) != dependenceVectors.end() ? dependenceVectors[renamed_src_reg] : 0;
+            TokenManager::TokenDependenceVector src_dependence_vector = dependenceVectors.find(renamed_src_reg) != dependenceVectors.end() ? dependenceVectors[renamed_src_reg] : 0;
             src_dependence_vector_ac |= src_dependence_vector;
         }
 
         // Update dest's dependence vector
-        uint32_t existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
+        TokenManager::TokenDependenceVector existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
         dependenceVectors[renamed_dest_reg] = existing_dest_dependence_vector | src_dependence_vector_ac;
 
         // Update instruction's dependence vector (represents OR of dest registers' dependence vectors).

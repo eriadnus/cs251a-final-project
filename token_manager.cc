@@ -10,7 +10,7 @@ namespace gem5
 namespace o3
 {
 
-uint32_t TokenManager::activeTokens = 0;
+uint64_t TokenManager::activeTokens = 0;
 unsigned TokenManager::lastAllocatedToken = 0;
 unsigned TokenManager::maxNumActiveTokens = 0;
 unsigned TokenManager::currentNumActiveTokens = 0;
@@ -22,7 +22,7 @@ TokenManager::allocateTokenID(const DynInstPtr &inst) {
     // Start at next token position (more likely available).
     int query_idx = lastAllocatedToken % MaxTokenID;
 
-    printf("Current token allocation: %d\n", activeTokens);
+    printf("Current token allocation: %ld\n", activeTokens);
 
     // Check to make sure we haven't gone over the max allowed token value.
     for (int query_attempt = 0; query_attempt < MaxTokenID; query_attempt++)
@@ -50,7 +50,7 @@ TokenManager::deallocateTokenID(unsigned token) {
 
     if (token <= MaxTokenID && token > 0) {
         activeTokens &= ~(1 << (token-1)); // Unset allocation flag for token.
-        printf("Current token allocation during deallocation: %d\n", activeTokens);
+        printf("Current token allocation during deallocation: %ld\n", activeTokens);
         _decrementCurrentActiveTokenCount();
         return true;
     }

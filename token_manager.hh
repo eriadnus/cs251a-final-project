@@ -15,6 +15,8 @@ class TokenManager
 {
   public:
 
+    typedef uint64_t TokenDependenceVector;
+
     /** Allocate next token for LOAD instruction */
     bool allocateTokenID(const DynInstPtr &inst);
 
@@ -34,7 +36,7 @@ class TokenManager
   private:
     
     /** Bitstring of active, allocated set of tokens */
-    static uint32_t activeTokens;
+    static uint64_t activeTokens;
 
     /** Last token allocation completed, enables small optimization for token allocation */
     static unsigned lastAllocatedToken;
