@@ -33,6 +33,9 @@ class TokenManager
     static unsigned maxNumActiveTokens;
     static unsigned currentNumActiveTokens;
 
+    /** Count of attempted over-allocations for dependency tokens */
+    static unsigned tokenOverAllocationCount;
+
   private:
     
     /** Bitstring of active, allocated set of tokens */
@@ -40,9 +43,6 @@ class TokenManager
 
     /** Last token allocation completed, enables small optimization for token allocation */
     static unsigned lastAllocatedToken;
-
-    /** Count of attempted over-allocations for dependency tokens */
-    static unsigned tokenOverAllocationCount;
 };
 
 } // namespace o3

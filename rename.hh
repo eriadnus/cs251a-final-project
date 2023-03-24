@@ -545,6 +545,13 @@ class Rename
         statistics::Scalar tempSerializing;
         /** Number of instructions inserted into skid buffers. */
         statistics::Scalar skidInsts;
+
+        /** Selective Replay Support Stats*/
+
+        statistics::Scalar tokenOverAllocationEvents;
+
+        /** END of Selective Replay Support Stats */
+
     } stats;
 };
 

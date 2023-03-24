@@ -145,7 +145,9 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(tempSerializing, statistics::units::Count::get(),
                "count of temporary serializing insts renamed"),
       ADD_STAT(skidInsts, statistics::units::Count::get(),
-               "count of insts added to the skid buffer")
+               "count of insts added to the skid buffer"),
+      ADD_STAT(tokenOverAllocationEvents, statistics::units::Count::get(),
+               "Number of times an attempt was made to over-allocate a token from our empty free-list")
 {
     squashCycles.prereq(squashCycles);
     idleCycles.prereq(idleCycles);
@@ -175,6 +177,8 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     serializing.flags(statistics::total);
     tempSerializing.flags(statistics::total);
     skidInsts.flags(statistics::total);
+
+    tokenOverAllocationEvents.flags(statistics::total);
 }
 
 void
@@ -1090,6 +1094,7 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
         }
         else { // TODO: Handle these structural issues of no more tokens being able to be allocated.
             // printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.");
+            stats.tokenOverAllocationEvents = tokenManager.tokenOverAllocationCount;
         }
     }
 
