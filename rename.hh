@@ -548,6 +548,7 @@ class Rename
 
         /** Selective Replay Support Stats*/
 
+        statistics::Histogram tokenAllocations;
         statistics::Scalar tokenOverAllocationEvents;
 
         /** END of Selective Replay Support Stats */
