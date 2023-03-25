@@ -647,8 +647,9 @@ LSQUnit::executeLoad(const DynInstPtr &inst)
 
             if (checkLoads) {
                 Fault f = checkViolations(it, inst);
-                if (f != NoFault)
-                    printf("LOAD VIOLATION FAULT DETECTED");
+                if (f != NoFault) {
+                    // printf("LOAD VIOLATION FAULT DETECTED");
+                }
                 return f;
             }
         }
@@ -716,8 +717,9 @@ LSQUnit::executeStore(const DynInstPtr &store_inst)
     }
 
     Fault f = checkViolations(loadIt, store_inst);
-    if (f != NoFault)
-        printf("other - STORE VIOLATION FAULT DETECTED");
+    if (f != NoFault) {
+        // printf("other - STORE VIOLATION FAULT DETECTED");
+    }
     return f;
 }
 

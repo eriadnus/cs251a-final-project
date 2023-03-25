@@ -465,7 +465,7 @@ class Rename
     /********* Selective Replay Support BEGIN ********/
 
     /** Map of register IDs to dependence vectors, a bitstring representing set bits for tokens of previous LOAD instructions */
-    std::map<RegIndex, uint32_t> dependenceVectors;
+    std::map<RegIndex, TokenManager::TokenDependenceVector> dependenceVectors;
 
     /** TokenManager for managing dependence tokens for LOAD instructions */
     TokenManager tokenManager;
@@ -545,6 +545,14 @@ class Rename
         statistics::Scalar tempSerializing;
         /** Number of instructions inserted into skid buffers. */
         statistics::Scalar skidInsts;
+
+        /** Selective Replay Support Stats*/
+
+        statistics::Histogram tokenAllocations;
+        statistics::Scalar tokenOverAllocationEvents;
+
+        /** END of Selective Replay Support Stats */
+
     } stats;
 };
 

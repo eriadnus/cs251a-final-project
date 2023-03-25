@@ -47,6 +47,7 @@
 #include "cpu/o3/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "cpu/o3/limits.hh"
+#include "cpu/o3/token_manager.hh"
 #include "cpu/reg_class.hh"
 #include "debug/Activity.hh"
 #include "debug/O3PipeView.hh"
@@ -144,7 +145,11 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(tempSerializing, statistics::units::Count::get(),
                "count of temporary serializing insts renamed"),
       ADD_STAT(skidInsts, statistics::units::Count::get(),
-               "count of insts added to the skid buffer")
+               "count of insts added to the skid buffer"),
+      ADD_STAT(tokenAllocations, statistics::units::Count::get(),
+               "Number of tokens allocated at every decoded load instruction."),
+      ADD_STAT(tokenOverAllocationEvents, statistics::units::Count::get(),
+               "Number of times an attempt was made to over-allocate a token from our empty free-list")
 {
     squashCycles.prereq(squashCycles);
     idleCycles.prereq(idleCycles);
@@ -174,6 +179,12 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     serializing.flags(statistics::total);
     tempSerializing.flags(statistics::total);
     skidInsts.flags(statistics::total);
+
+    tokenAllocations
+        .init(MaxTokenID + 1) // + 1 to account for 0 bin
+        .flags(statistics::oneline);
+
+    tokenOverAllocationEvents.flags(statistics::total);
 }
 
 void
@@ -1084,10 +1095,14 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
     /* Selective Replay Support */
     if (inst->isLoad()) {
         // Allocate a new, free token ID to "represent" this load.
-        if (tokenManager.allocateTokenID(inst))
-            printf("Allocated new token: %d\n", inst->tokenID);
-        else // TODO: Handle these structural issues of no more tokens being able to be allocated.
-            printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.");
+        if (tokenManager.allocateTokenID(inst)) {
+            // printf("Allocated new token: %d\n", inst->tokenID);
+            stats.tokenAllocations.sample(tokenManager.currentNumActiveTokens);
+        }
+        else { // TODO: Handle these structural issues of no more tokens being able to be allocated.
+            // printf("ERROR: Unable to allocate new token for LOAD instruction. This case is currently unhandled, so undefined behavior that may be incorrect could result.");
+            stats.tokenOverAllocationEvents = tokenManager.tokenOverAllocationCount;
+        }
     }
 
     inst->dependenceVector = 0;
@@ -1147,7 +1162,7 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
         // Allocate token and record new dependence (to be trickled down) if instruction is load.
         if (inst->isLoad()) {
 
-            uint32_t existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
+            TokenManager::TokenDependenceVector existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
 
             // Record dependence on this token for this destination register.
             if (inst->tokenID)
@@ -1166,12 +1181,12 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
             uint16_t renamed_src_reg = inst->renamedSrcIdx(src_idx)->index();
 
             // Accumulate source's dependence vector.
-            uint32_t src_dependence_vector = dependenceVectors.find(renamed_src_reg) != dependenceVectors.end() ? dependenceVectors[renamed_src_reg] : 0;
+            TokenManager::TokenDependenceVector src_dependence_vector = dependenceVectors.find(renamed_src_reg) != dependenceVectors.end() ? dependenceVectors[renamed_src_reg] : 0;
             src_dependence_vector_ac |= src_dependence_vector;
         }
 
         // Update dest's dependence vector
-        uint32_t existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
+        TokenManager::TokenDependenceVector existing_dest_dependence_vector = dependenceVectors.find(renamed_dest_reg) != dependenceVectors.end() ? dependenceVectors[renamed_dest_reg] : 0;
         dependenceVectors[renamed_dest_reg] = existing_dest_dependence_vector | src_dependence_vector_ac;
 
         // Update instruction's dependence vector (represents OR of dest registers' dependence vectors).

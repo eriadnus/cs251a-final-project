@@ -36,7 +36,7 @@ namespace o3
 
 static constexpr int MaxWidth = 12;
 static constexpr int MaxThreads = 4;
-static constexpr int MaxTokenID = 32; // Selective Replay Support - used as index into mem dependence vector
+static constexpr int MaxTokenID = 64; // Selective Replay Support - used as index into mem dependence vector
 static constexpr int MaxRegisters = 32; // Selective Replay Support - used to init tracking array of dependence vectors for registers // TODO: Make this set by param during init (and data structures get dynamically allocated during init)
 
 } // namespace o3
