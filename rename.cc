@@ -181,7 +181,7 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     skidInsts.flags(statistics::total);
 
     tokenAllocations
-        .init(1)
+        .init(MaxTokenID)
         .flags(statistics::oneline);
 
     tokenOverAllocationEvents.flags(statistics::total);
