@@ -9,4 +9,4 @@ e.g. `./add.sh src/cpu/BaseCPU.py BaseCPU.py`
 Do *not* run this more than once - only modify the copy that you have after adding and run the copy script afterwards.  
 
 ### Copying all current files over to correct place in gem5 repo.
-run `./copy.sh`  
+run `./copy.sh NAME-OF-GEM5-SISTER-DIR`  
